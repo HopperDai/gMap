@@ -1,0 +1,52 @@
+<div class="wrapper" #wrapper>
+
+  <div id="mapContainer" class="map-container"></div>
+
+  <div class="header">
+    <div class="input-radio" *ngFor="let region of administrativeRegion">
+      <input type="radio" name="administrative" class="radio" [checked]="region.name==='桂林市'"
+             (change)="showDistrict($event,region)">
+      <label class="radio-label">{{region.name}}</label>
+    </div>
+  </div>
+
+  <div class="right-panel" [@panelToggle]="panelState">
+    <div class="info-button" (click)="showOrHidePanel()">
+      <div class="info-button-top"></div>
+      <div class="info-button-middle">
+        <span class="toggle-button">{{toggleButton}}</span>
+      </div>
+      <div class="info-button-bottom"></div>
+    </div>
+    <div class="right-panel-content">
+      <div class="content-wrap">
+        <div class="checkbox-row" *ngIf="!is3DHeatmap">
+          <input type="checkbox" class="checkbox-input" checked="true" (change)="showOrHideMarker($event)">点标注
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" class="checkbox-input" checked="true" (change)="showOrHideHeatmap($event)">热力图
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="function-panel">
+    <div class="function-panel-button" (click)="toggleFullScreen()">
+      <img class="toggle-fullscreen-button-img"
+           [src]="fullscreen?'./assets/images/quitFullscreen.png':'./assets/images/fullscreen.png'" alt="">
+      {{toggleFullScreenButton}}
+    </div>
+    <div class="function-panel-button" (click)="toggleHeapmatPattern()">{{heatmapPattern}}</div>
+  </div>
+</div>
+
+<div #createInfoWindow class="info-window">
+  <div class="triangle-down"></div>
+  <div class="info-window-title">
+    信息窗体
+    <div class="close-info-window" (click)="closeInfoWindow()">x</div>
+  </div>
+  <div class="info-window-content">
+    内容
+  </div>
+</div>
