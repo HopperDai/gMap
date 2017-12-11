@@ -40,7 +40,12 @@
   </div>
 
   <div class="time-line">
-
+    <div class="time-range" [ngStyle]="{'left':-timeRangeLeft+'px'}">
+      <div class="time-item" *ngFor="let item of timeLineData;let i = index" [ngClass]="{'selected':item.checked}"
+           (click)="selectMonth(item,i)">
+        {{item.label}}
+      </div>
+    </div>
   </div>
 </div>
 

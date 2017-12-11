@@ -78,6 +78,57 @@ export class AppComponent implements OnInit {
   district;
   districtPolygons = [];
 
+  timeLineData = [{
+    label: '1月',
+    value: 1,
+    checked: true
+  }, {
+    label: '2月',
+    value: 2,
+    checked: false
+  }, {
+    label: '3月',
+    value: 3,
+    checked: false
+  }, {
+    label: '4月',
+    value: 4,
+    checked: false
+  }, {
+    label: '5月',
+    value: 5,
+    checked: false
+  }, {
+    label: '6月',
+    value: 6,
+    checked: false
+  }, {
+    label: '7月',
+    value: 7,
+    checked: false
+  }, {
+    label: '8月',
+    value: 8,
+    checked: false
+  }, {
+    label: '9月',
+    value: 9,
+    checked: false
+  }, {
+    label: '10月',
+    value: 10,
+    checked: false
+  }, {
+    label: '11月',
+    value: 11,
+    checked: false
+  }, {
+    label: '12月',
+    value: 12,
+    checked: false
+  }];
+  timeRangeLeft = 0;
+
   private sts = [{
     url: 'http://a.amap.com/jsapi_demos/static/images/blue.png',
     size: new AMap.Size(32, 32),
@@ -378,6 +429,24 @@ export class AppComponent implements OnInit {
   // 关闭信息窗体
   closeInfoWindow() {
     this.infoWindow.close();
+  }
+
+  // 选择月份
+  selectMonth(item, index) {
+    for (const time of this.timeLineData) {
+      if (item.label === time.label) {
+        time.checked = !time.checked;
+      } else {
+        time.checked = false;
+      }
+    }
+    if (2 < index && index < 9) {
+      this.timeRangeLeft = (index - 3) * (50) + 25;
+    } else if (index >= 9) { // 临界点的left值
+      this.timeRangeLeft = 300;
+    } else if (index <= 2) { // 临界点的left值
+      this.timeRangeLeft = 0;
+    }
   }
 
 }
