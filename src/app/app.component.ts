@@ -211,7 +211,15 @@ export class AppComponent implements OnInit {
       }
     }
 
-    this.powerCutRegoin = [...Object.keys(this.powerCutRegoinData)];
+    const regions = [...Object.keys(this.powerCutRegoinData)];
+    for (const item of regions) {
+      const region = {
+        name: item,
+        value: item,
+        regionName: item
+      };
+      this.powerCutRegoin.push(region);
+    }
     console.log(this.powerCutRegoin);
   }
 
