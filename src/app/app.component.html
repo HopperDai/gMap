@@ -3,18 +3,11 @@
   <div id="mapContainer" class="map-container"></div>
 
   <div class="header">
-
     <nz-radio-group [(ngModel)]="regionValue" (ngModelChange)="showDistrict()">
       <label nz-radio *ngFor="let region of regions" [nzValue]="region.value">
         <span class="radio-label">{{region.name}}</span>
       </label>
     </nz-radio-group>
-
-    <!--<div class="input-radio" *ngFor="let region of regions">-->
-    <!--<input type="radio" name="administrative" class="radio" [checked]="region.name==='全部'"-->
-    <!--(change)="showDistrict($event,region)">-->
-    <!--<label class="radio-label">{{region.name}}</label>-->
-    <!--</div>-->
   </div>
 
   <div class="right-panel" [@panelToggle]="panelState">
@@ -27,12 +20,6 @@
     </div>
     <div class="right-panel-content">
       <div class="content-wrap">
-        <!--<div class="checkbox-row" *ngIf="!is3DHeatmap">-->
-        <!--<input type="checkbox" class="checkbox-input" checked="true" (change)="showOrHideMarker($event)">点标注-->
-        <!--</div>-->
-        <!--<div class="checkbox-row">-->
-        <!--<input type="checkbox" class="checkbox-input" checked="true" (change)="showOrHideHeatmap($event)">热力图-->
-        <!--</div>-->
         <div *ngIf="!is3DHeatmap" style="margin-bottom: 10px">
           <label nz-checkbox [(ngModel)]="isShowMarker" (ngModelChange)="showOrHideMarker($event)">
             <span>点标注</span>
@@ -44,11 +31,10 @@
           </label>
         </div>
         <div style="margin-bottom: 10px">
-          <label nz-checkbox [(ngModel)]="isShowMonthPannel" (ngModelChange)="showOrHideMonthPannel($event)">
+          <label nz-checkbox [(ngModel)]="isShowMonthpanel" (ngModelChange)="showOrHideMonthpanel($event)">
             <span>按月份筛选</span>
           </label>
         </div>
-
         <div class="issue-select">
           <nz-select style="width: 300px;"
                      [nzMode]="'multiple'"
@@ -65,6 +51,17 @@
         </div>
       </div>
     </div>
+    <!--<div class="right-panel-bottom">-->
+      <!--数据类型：-->
+      <!--<nz-radio-group [(ngModel)]="dataType">-->
+        <!--<label nz-radio [nzValue]="'appeal'">-->
+          <!--<span>诉求</span>-->
+        <!--</label>-->
+        <!--<label nz-radio [nzValue]="'powerCut'">-->
+          <!--<span>停电</span>-->
+        <!--</label>-->
+      <!--</nz-radio-group>-->
+    <!--</div>-->
   </div>
 
   <div class="function-panel">
@@ -76,17 +73,15 @@
     <div class="function-panel-button" (click)="toggleHeapmatPattern()">{{heatmapPattern}}</div>
   </div>
 
-  <div class="time-line" *ngIf="isShowMonthPannel">
+  <div class="time-line" *ngIf="isShowMonthpanel">
     <!--<div class="time-range" [ngStyle]="{'left':-timeRangeLeft+'px'}">-->
     <!--<div class="time-item" *ngFor="let item of timeLineData;let i = index" [ngClass]="{'selected':item.checked}"-->
     <!--(click)="selectMonth(item,i)">-->
     <!--{{item.label}}-->
     <!--</div>-->
     <!--</div>-->
-
     <nz-slider [nzMarks]="marks" [nzMin]="1" [nzMax]="12" [nzIncluded]="false"
                [(ngModel)]="currentMonth" (ngModelChange)="changeMonth()"></nz-slider>
-
   </div>
 </div>
 

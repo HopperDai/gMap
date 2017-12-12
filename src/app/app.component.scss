@@ -64,6 +64,13 @@ $border-radius: 6px;
   right: 0;
   display: flex;
   flex-direction: row;
+  &-bottom {
+    position: absolute;
+    left: 20px;
+    bottom: 0;
+    padding: 16px;
+    color: white;
+  }
 }
 
 .info-button {

@@ -6,6 +6,7 @@ import {Regions} from './model/regions';
 import {Observable} from 'rxjs/Rx';
 import {Query} from './model/query.model';
 import {BizType} from './model/biz-type';
+import {PowerCutData} from './model/markers';
 
 declare var AMap: any;
 declare var ActiveXObject: any;
@@ -52,14 +53,19 @@ export class AppComponent implements OnInit {
   heatmapPattern = '热力图3D模式';
   is3DHeatmap = false;
 
+  dataType = 'appeal';
   data = [];
   query: Query = {}; // 查询数据条件
   markers = [];
 
+  powerCutData = []; // 停电数据
+  powerCutRegoin = []; // 停电区域
+  powerCutRegoinData = {}; // 停电区域数据
+
   panelState = 'hide';
   isShowMarker = true;
   isShowHeatmap = true;
-  isShowMonthPannel = false;
+  isShowMonthpanel = false;
 
   toggleButton = '<';
 
@@ -165,30 +171,12 @@ export class AppComponent implements OnInit {
     offset: new AMap.Pixel(-24, -24)
   }];
 
-  issueOptions = [{
-    label: '问题1',
-    value: 1
-  }, {
-    label: '问题2',
-    value: 2
-  }, {
-    label: '问题3',
-    value: 3
-  }, {
-    label: '问题4',
-    value: 4
-  }, {
-    label: '问题5',
-    value: 5
-  }, {
-    label: '问题6',
-    value: 6
-  }];
-
   constructor(private service: AppService) {
   }
 
   ngOnInit() {
+    this.initPowerCutData();
+
     this.regions = [...Regions];
     this.appealType = [...BizType];
     this.currentMonth = new Date().getMonth() + 1;
@@ -198,6 +186,33 @@ export class AppComponent implements OnInit {
       this.loadMarker();
       this.loadHeatmapData();
     });
+  }
+
+  // 初始化停电数据
+  initPowerCutData() {
+    this.powerCutData = [...PowerCutData];
+
+    // 删除数据空格
+    for (const item of this.powerCutData) {
+      for (const key in item) {
+        if (item[key]) {
+          item[key] = item[key].replace(/\s+/g, '');
+        }
+      }
+    }
+
+    // 按地区组装数据
+    for (const item of this.powerCutData) {
+      const key = item.zoneID;
+      if (!this.powerCutRegoinData[key]) {
+        this.powerCutRegoinData[key] = [item];
+      } else {
+        this.powerCutRegoinData[key].push(item);
+      }
+    }
+
+    this.powerCutRegoin = [...Object.keys(this.powerCutRegoinData)];
+    console.log(this.powerCutRegoin);
   }
 
   // 加载地图和获取marker数据
@@ -227,25 +242,35 @@ export class AppComponent implements OnInit {
   // 获取数据
   getData(query: Query = {}) {
     this.data = [];
+
+    // if(this.)
+
     this.service.getData(query).subscribe(({data}) => {
       this.data = data;
-      this.loadMarker();
-      this.loadHeatmapData();
+      console.log(data);
+      if (this.is3DHeatmap) {
+        this.init3DHeatmap();
+      } else {
+        this.loadMarker();
+        this.loadHeatmapData();
+      }
     });
   }
 
   // 初始化地图
   initMap() {
-    // this.initHeatmapData();
+    this.mapInstance();
 
+    this.initFullscreenEvent();
+  }
+
+  private mapInstance() {
     this.map = new AMap.Map('mapContainer', {
       resizeEnable: true,
       center: [110.29002, 25.27361]
     });
 
-    this.initFullscreenEvent();
-
-    this.initMapService();
+    this.initMapService(); // 区别于3d热力图
   }
 
   // 加载热力图数据
@@ -322,10 +347,13 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // 显示或隐藏月份 pannel
-  showOrHideMonthPannel(ev) {
+  // 显示或隐藏月份 panel
+  showOrHideMonthpanel(ev) {
     if (ev) {
       this.changeMonth();
+    } else {
+      this.query.endTime = '';
+      this.getData(this.query);
     }
   }
 
@@ -442,17 +470,17 @@ export class AppComponent implements OnInit {
 
   // 切换热力图模式
   toggleHeapmatPattern() {
-    // this.map.destroy();
     if (this.is3DHeatmap) {
-      this.initMap();
-      this.drawDistrict(this.currentRegionName);
       this.is3DHeatmap = false;
       this.heatmapPattern = '热力图3D模式';
+
+      this.mapInstance();
+      this.getData();
     } else {
-      // this.cluster.clearMarkers();
-      this.init3DHeatmap();
       this.is3DHeatmap = true;
       this.heatmapPattern = '普通地图';
+
+      this.init3DHeatmap();
     }
   }
 
@@ -478,19 +506,18 @@ export class AppComponent implements OnInit {
     };
 
     // 初始化heatmap对象
-    const heatmap3D = new AMap.Heatmap(this.map, heatmapOpts);
+    this.heatmap = new AMap.Heatmap(this.map, heatmapOpts);
 
     const heatmapDatas = [];
 
-    // for (const item of this.markersData) {
-    //   const lnglat = item.split(',');
-    //   heatmapDatas.push({
-    //     lng: lnglat[0],
-    //     lat: lnglat[1]
-    //   })
-    // }
+    for (const item of this.data) {
+      heatmapDatas.push({
+        lng: item.longitude,
+        lat: item.latitude
+      })
+    }
 
-    heatmap3D.setDataSet({
+    this.heatmap.setDataSet({
       data: heatmapDatas,
     });
   }
