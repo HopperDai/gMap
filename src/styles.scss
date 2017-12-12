@@ -11,8 +11,21 @@ html, body {
 
 .ant-select-selection--multiple {
   background: gray !important;
+  color: white;
 }
 
 .ant-select-open .ant-select-selection {
+  color: white;
+}
+
+.ant-select-selection__choice {
+  background: #108ee9 !important;
+}
+
+.ant-select-selection--multiple .ant-select-selection__choice__content {
+  color: white;
+}
+
+:root .ant-select-selection--multiple .ant-select-selection__choice__remove {
   color: white;
 }

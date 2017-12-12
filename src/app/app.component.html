@@ -4,7 +4,7 @@
 
   <div class="header">
     <div class="input-radio" *ngFor="let region of regions">
-      <input type="radio" name="administrative" class="radio"
+      <input type="radio" name="administrative" class="radio" [checked]="region.name==='全部'"
              (change)="showDistrict($event,region)">
       <label class="radio-label">{{region.name}}</label>
     </div>
@@ -33,7 +33,7 @@
                      [nzPlaceHolder]="'请选择问题类型'"
                      [nzNotFoundContent]="'无法找到'">
             <nz-option
-              *ngFor="let option of issueOptions"
+              *ngFor="let option of appealType"
               [nzLabel]="option.label"
               [nzValue]="option.value">
             </nz-option>

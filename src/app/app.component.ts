@@ -4,6 +4,9 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Markers} from './model/markers';
 import {AppService} from './services/app.service';
 import {Regions} from './model/regions';
+import {Observable} from 'rxjs/Rx';
+import {Query} from './model/query.model';
+import {BizType} from './model/biz-type';
 
 declare var AMap: any;
 declare var ActiveXObject: any;
@@ -44,8 +47,9 @@ export class AppComponent implements OnInit {
   heatmapPattern = '热力图3D模式';
   is3DHeatmap = false;
 
+  data = [];
+  query: Query; // 查询数据条件
   markers = [];
-  markersData = [];
 
   panelState = 'hide';
 
@@ -53,31 +57,9 @@ export class AppComponent implements OnInit {
 
   currentRegionName = '桂林市'; // 当前显示的区域名称
 
-  // administrativeRegion = [{
-  //   name: '桂林市',
-  //   center: '110.29002, 25.27361'
-  // }, {
-  //   name: '秀峰区',
-  //   center: '110.264183,25.273625'
-  // }, {
-  //   name: '叠彩区',
-  //   center: '110.30188,25.31402'
-  // }, {
-  //   name: '象山区',
-  //   center: '110.28110,25.26159'
-  // }, {
-  //   name: '七星区',
-  //   center: '110.322224,25.252701'
-  // }, {
-  //   name: '雁山区',
-  //   center: '110.28669,25.101935'
-  // }, {
-  //   name: '临桂区',
-  //   center: '110.212463,25.238628'
-  // }];
-
-  // administrativeRegion;
   regions;
+
+  appealType;
 
   heatmapData = [];
   district;
@@ -180,32 +162,53 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.markersData = [...Markers]; // 获取 marker 数据
     this.regions = [...Regions];
+    this.appealType = [...BizType];
 
-    this.service.getData().subscribe((res) => {
-      console.log(res);
+    this.loadMapData().subscribe((res) => {
+      this.data = res[0].data;
+      this.loadMarker();
+      this.loadHeatmapData();
     });
+  }
 
-    // 异步加载地图
-    Utils.loadAMap().subscribe(success => {
-      if (success) {
-        this.initMap();
-        this.loadMarker();
+  // 加载地图和获取marker数据
+  loadMapData() {
+    return Observable.zip(this.service.getData({}), this.loadMap());
+  }
 
-        // 信息窗体实例化
-        this.infoWindow = new AMap.InfoWindow({
-          isCustom: true,  // 使用自定义窗体
-          content: this.createInfoWindow.nativeElement,
-          offset: new AMap.Pixel(0, -40)
-        });
-      }
+  // 异步加载地图
+  loadMap() {
+    return Observable.create(observable => {
+      Utils.loadAMap().subscribe(success => {
+        if (success) {
+          observable.next(true);
+          this.initMap();
+
+          // 信息窗体实例化
+          this.infoWindow = new AMap.InfoWindow({
+            isCustom: true,  // 使用自定义窗体
+            content: this.createInfoWindow.nativeElement,
+            offset: new AMap.Pixel(0, -40)
+          });
+        }
+      });
+    })
+  }
+
+  // 获取数据
+  getData(query: Query = {}) {
+    this.data = [];
+    this.service.getData(query).subscribe(({data}) => {
+      this.data = data;
+      this.loadMarker();
+      this.loadHeatmapData();
     });
   }
 
   // 初始化地图
   initMap() {
-    this.initHeatmapData();
+    // this.initHeatmapData();
 
     this.map = new AMap.Map('mapContainer', {
       resizeEnable: true,
@@ -217,17 +220,16 @@ export class AppComponent implements OnInit {
     this.initMapService();
   }
 
-  // 初始化热力图数据
-  initHeatmapData() {
+  // 加载热力图数据
+  loadHeatmapData() {
     this.heatmapData = [];
-    const markerDatas = [...this.markersData];
-    for (const item of markerDatas) {
-      const lnglat = item.split(',');
+    for (const item of this.data) {
       this.heatmapData.push({
-        lng: lnglat[0],
-        lat: lnglat[1]
+        lng: item.longitude,
+        lat: item.latitude
       })
     }
+    this.heatmap.setDataSet({data: this.heatmapData}); // 设置热力图数据集
   }
 
   // 地图插件初始化
@@ -246,12 +248,32 @@ export class AppComponent implements OnInit {
     // 加载热力图插件
     AMap.plugin(['AMap.Heatmap', 'AMap.ControlBar'], () => {
       this.heatmap = new AMap.Heatmap(this.map);    // 在地图对象叠加热力图
-      this.heatmap.setDataSet({data: this.heatmapData}); // 设置热力图数据集
     });
 
+    // 构造点聚合对象
     AMap.service('AMap.MarkerClusterer', () => {
       this.cluster = new AMap.MarkerClusterer(this.map, this.markers, {styles: this.sts, gridSize: 80});
     });
+  }
+
+  // 加载 marker
+  loadMarker() {
+    this.cluster.clearMarkers();
+    this.markers = [];
+    for (const item of this.data) {
+      const lnglat = [item.longitude, item.latitude]; // 经纬度数据
+      const marker = new AMap.Marker({
+        position: lnglat,
+      });
+      // 鼠标点击marker弹出自定义的信息窗体
+      marker.on('click', () => {
+        this.infoWindow.open(this.map, marker.getPosition());
+      });
+      this.markers.push(marker);
+    }
+    this.cluster.addMarkers(this.markers);
+
+    console.log('点标注加载成功'); // 加载完数据的处理
   }
 
   // 显示或隐藏 markers
@@ -280,34 +302,13 @@ export class AppComponent implements OnInit {
     this.toggleButton = this.panelState === 'hide' ? '<' : '>'
   }
 
-  // 加载 marker
-  loadMarker() {
-    this.markers = [];
-    for (const item of this.markersData) {
-      const marker = new AMap.Marker({
-        position: item.split(','),
-      });
-      // 鼠标点击marker弹出自定义的信息窗体
-      marker.on('click', () => {
-        this.infoWindow.open(this.map, marker.getPosition());
-      });
-      this.markers.push(marker);
-    }
-    this.cluster.addMarkers(this.markers);
-
-    console.log('点标注加载成功'); // 加载完数据的处理
-  }
-
   // 显示和切换区局
   showDistrict(ev, region) {
     if (ev.target.checked && this.currentRegionName !== region.name) {
       this.currentRegionName = region.name;
 
-      this.service.getData({zoneID: this.currentRegionName}).subscribe((res) => {
-        console.log(res);
-      });
-
-      // this.drawDistrict(region.name);
+      this.getData({zoneID: region.name === '全部' ? '' : region.name});
+      this.drawDistrict(region.regionName);
     }
   }
 
@@ -448,13 +449,13 @@ export class AppComponent implements OnInit {
 
     const heatmapDatas = [];
 
-    for (const item of this.markersData) {
-      const lnglat = item.split(',');
-      heatmapDatas.push({
-        lng: lnglat[0],
-        lat: lnglat[1]
-      })
-    }
+    // for (const item of this.markersData) {
+    //   const lnglat = item.split(',');
+    //   heatmapDatas.push({
+    //     lng: lnglat[0],
+    //     lat: lnglat[1]
+    //   })
+    // }
 
     heatmap3D.setDataSet({
       data: heatmapDatas,

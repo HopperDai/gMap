@@ -11,7 +11,7 @@ export class AppService {
   }
 
   // 获取业务数据
-  getData(query: Query = {}) {
+  getData(query) {
     return this.http.post(APP_SERVE_URL + '/map/resource', query).map(res => res.json());
   }
 }
