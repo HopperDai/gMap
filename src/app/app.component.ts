@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Utils} from './utils/utils';
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {Markers} from './model/markers';
 import {AppService} from './services/app.service';
 import {Regions} from './model/regions';
 import {Observable} from 'rxjs/Rx';
@@ -13,6 +12,11 @@ declare var ActiveXObject: any;
 declare global {
   interface Document {
     mozCancelFullScreen(): void;
+  }
+
+  interface HTMLBodyElement {
+    mozRequestFullScreen(): void;
+    msRequestFullscreen(): void
   }
 }
 
@@ -48,18 +52,23 @@ export class AppComponent implements OnInit {
   is3DHeatmap = false;
 
   data = [];
-  query: Query; // 查询数据条件
+  query: Query = {}; // 查询数据条件
   markers = [];
 
   panelState = 'hide';
+  isShowMarker = true;
+  isShowHeatmap = true;
+  isShowMonthPannel = false;
 
   toggleButton = '<';
 
   currentRegionName = '桂林市'; // 当前显示的区域名称
+  regionValue = '';
 
   regions;
 
-  appealType;
+  appealType = [];
+  selectedAppealType;
 
   heatmapData = [];
   district;
@@ -114,6 +123,23 @@ export class AppComponent implements OnInit {
     value: 12,
     checked: false
   }];
+
+  marks = {
+    1: '1月',
+    2: '2月',
+    3: '3月',
+    4: '4月',
+    5: '5月',
+    6: '6月',
+    7: '7月',
+    8: '8月',
+    9: '9月',
+    10: '10月',
+    11: '11月',
+    12: '12月',
+  };
+  currentMonth: number;
+
   timeRangeLeft = 0;
 
   private sts = [{
@@ -164,6 +190,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.regions = [...Regions];
     this.appealType = [...BizType];
+    this.currentMonth = new Date().getMonth() + 1;
 
     this.loadMapData().subscribe((res) => {
       this.data = res[0].data;
@@ -278,8 +305,7 @@ export class AppComponent implements OnInit {
 
   // 显示或隐藏 markers
   showOrHideMarker(ev) {
-    const checked = ev.target.checked;
-    if (checked) {
+    if (ev) {
       this.cluster.addMarkers(this.markers);
     } else {
       this.cluster.removeMarkers(this.markers);
@@ -288,8 +314,7 @@ export class AppComponent implements OnInit {
 
   // 显示或隐藏 heatmap
   showOrHideHeatmap(ev) {
-    const checked = ev.target.checked;
-    if (checked) {
+    if (ev) {
       this.heatmap.show();
     } else {
       this.heatmap.hide();
@@ -303,13 +328,11 @@ export class AppComponent implements OnInit {
   }
 
   // 显示和切换区局
-  showDistrict(ev, region) {
-    if (ev.target.checked && this.currentRegionName !== region.name) {
-      this.currentRegionName = region.name;
-
-      this.getData({zoneID: region.name === '全部' ? '' : region.name});
-      this.drawDistrict(region.regionName);
-    }
+  showDistrict() {
+    const regionName = this.regions.find(region => region.value === this.regionValue).regionName;
+    this.query.zoneID = this.regionValue;
+    this.getData(this.query);
+    this.drawDistrict(regionName);
   }
 
   // 绘制行政区域
@@ -378,13 +401,15 @@ export class AppComponent implements OnInit {
 
   // 全屏
   launchFullscreen() {
-    const element = this.wrapper.nativeElement;
+    const element = document.getElementsByTagName('body')[0];
+    element.webkitRequestFullscreen();
+
+    // const element = this.wrapper.nativeElement;
     if (element.requestFullscreen) {
       element.requestFullscreen();
     } else if (element.mozRequestFullScreen) {
       element.mozRequestFullScreen();
     } else if (element.webkitRequestFullscreen) {
-
       element.webkitRequestFullscreen();
     } else if (element.msRequestFullscreen) {
       element.msRequestFullscreen();
@@ -483,6 +508,13 @@ export class AppComponent implements OnInit {
     } else if (index <= 2) { // 临界点的left值
       this.timeRangeLeft = 0;
     }
+  }
+
+  // 选择诉求类型
+  selectAppealType() {
+    console.log(this.query);
+    this.query.bizType1Strings = this.selectedAppealType;
+    this.getData(this.query);
   }
 
 }

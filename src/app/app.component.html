@@ -3,11 +3,18 @@
   <div id="mapContainer" class="map-container"></div>
 
   <div class="header">
-    <div class="input-radio" *ngFor="let region of regions">
-      <input type="radio" name="administrative" class="radio" [checked]="region.name==='全部'"
-             (change)="showDistrict($event,region)">
-      <label class="radio-label">{{region.name}}</label>
-    </div>
+
+    <nz-radio-group [(ngModel)]="regionValue" (ngModelChange)="showDistrict()">
+      <label nz-radio *ngFor="let region of regions" [nzValue]="region.value">
+        <span class="radio-label">{{region.name}}</span>
+      </label>
+    </nz-radio-group>
+
+    <!--<div class="input-radio" *ngFor="let region of regions">-->
+    <!--<input type="radio" name="administrative" class="radio" [checked]="region.name==='全部'"-->
+    <!--(change)="showDistrict($event,region)">-->
+    <!--<label class="radio-label">{{region.name}}</label>-->
+    <!--</div>-->
   </div>
 
   <div class="right-panel" [@panelToggle]="panelState">
@@ -20,18 +27,36 @@
     </div>
     <div class="right-panel-content">
       <div class="content-wrap">
-        <div class="checkbox-row" *ngIf="!is3DHeatmap">
-          <input type="checkbox" class="checkbox-input" checked="true" (change)="showOrHideMarker($event)">点标注
+        <!--<div class="checkbox-row" *ngIf="!is3DHeatmap">-->
+        <!--<input type="checkbox" class="checkbox-input" checked="true" (change)="showOrHideMarker($event)">点标注-->
+        <!--</div>-->
+        <!--<div class="checkbox-row">-->
+        <!--<input type="checkbox" class="checkbox-input" checked="true" (change)="showOrHideHeatmap($event)">热力图-->
+        <!--</div>-->
+        <div *ngIf="!is3DHeatmap" style="margin-bottom: 10px">
+          <label nz-checkbox [(ngModel)]="isShowMarker" (ngModelChange)="showOrHideMarker($event)">
+            <span>点标注</span>
+          </label>
         </div>
-        <div class="checkbox-row">
-          <input type="checkbox" class="checkbox-input" checked="true" (change)="showOrHideHeatmap($event)">热力图
+        <div style="margin-bottom: 10px">
+          <label nz-checkbox [(ngModel)]="isShowHeatmap" (ngModelChange)="showOrHideHeatmap($event)">
+            <span>热力图</span>
+          </label>
         </div>
+        <div style="margin-bottom: 10px">
+          <label nz-checkbox [(ngModel)]="isShowMonthPannel">
+            <span>按月份筛选</span>
+          </label>
+        </div>
+
 
         <div class="issue-select">
           <nz-select style="width: 300px;"
                      [nzMode]="'multiple'"
                      [nzPlaceHolder]="'请选择问题类型'"
-                     [nzNotFoundContent]="'无法找到'">
+                     [nzNotFoundContent]="'无法找到'"
+                     [(ngModel)]="selectedAppealType"
+                     (ngModelChange)="selectAppealType($event)">
             <nz-option
               *ngFor="let option of appealType"
               [nzLabel]="option.label"
@@ -52,13 +77,17 @@
     <div class="function-panel-button" (click)="toggleHeapmatPattern()">{{heatmapPattern}}</div>
   </div>
 
-  <div class="time-line">
-    <div class="time-range" [ngStyle]="{'left':-timeRangeLeft+'px'}">
-      <div class="time-item" *ngFor="let item of timeLineData;let i = index" [ngClass]="{'selected':item.checked}"
-           (click)="selectMonth(item,i)">
-        {{item.label}}
-      </div>
-    </div>
+  <div class="time-line" *ngIf="isShowMonthPannel">
+    <!--<div class="time-range" [ngStyle]="{'left':-timeRangeLeft+'px'}">-->
+    <!--<div class="time-item" *ngFor="let item of timeLineData;let i = index" [ngClass]="{'selected':item.checked}"-->
+    <!--(click)="selectMonth(item,i)">-->
+    <!--{{item.label}}-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <nz-slider [nzMarks]="marks" [nzMin]="1" [nzMax]="12" [nzIncluded]="false"
+               [nzDefaultValue]="currentMonth"></nz-slider>
+
   </div>
 </div>
 

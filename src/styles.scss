@@ -29,3 +29,20 @@ html, body {
 :root .ant-select-selection--multiple .ant-select-selection__choice__remove {
   color: white;
 }
+
+.ant-select-selection__placeholder, .ant-select-search__field__placeholder {
+  color: white !important;
+}
+
+.ant-slider-mark-text {
+  color: white !important;
+}
+
+.ant-slider-handle {
+  background: #108ee9 !important;
+  border-color: #108ee9 !important;
+}
+
+.ant-slider-mark-text-active {
+  color: #108ee9 !important;
+}

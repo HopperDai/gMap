@@ -2,7 +2,7 @@
 
 export interface Query {
   addr?: string
-  bizType2?: string
+  bizType1Strings?: any
   startTime?: string
   zoneID?: string
 }

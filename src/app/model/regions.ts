@@ -1,7 +1,7 @@
 export const Regions = [
   {
     name: '全部',
-    value: null,
+    value: '',
     regionName: '桂林市'
   }, {
     name: '东城供电分局',

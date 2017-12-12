@@ -32,15 +32,16 @@ $border-radius: 6px;
   width: 100%;
   height: 50px;
   line-height: 50px;
-  z-index: 999;
+  padding-left: 10px;
   position: fixed;
   top: 0;
   background: #1c2a30;
   opacity: 0.8;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  font-size: 1rem;
+  z-index: 999;
+  .radio-label {
+    color: white;
+    font-size: 14px
+  }
 }
 
 .input-radio {
@@ -192,6 +193,52 @@ $border-radius: 6px;
   font-weight: bold;
 }
 
+//.time-line {
+//  z-index: 999;
+//  position: absolute;
+//  bottom: $function-panel-bottom - 4px;
+//  right: $right-panel-width + 10px;
+//  border-radius: $border-radius;
+//  @include panelBackground;
+//  padding-top: 30px;
+//  max-width: 300px;
+//  overflow: hidden;
+//
+//  .time-range {
+//    position: relative;
+//    transition-timing-function: ease-in;
+//    border-top: 1px dotted #707070;
+//    width: 600px;
+//    display: flex;
+//    flex-direction: row;
+//    height: 30px;
+//    font-size: 12px;
+//  }
+//
+//  .time-item {
+//    position: relative;
+//    top: -15px;
+//    display: flex;
+//    align-items: center;
+//    justify-content: center;
+//    list-style: none;
+//    background-color: #ff7461;
+//    color: #fea497;
+//    flex-basis: 30px;
+//    border-radius: 15px;
+//    margin: 0 10px;
+//    cursor: pointer;
+//
+//    &:hover {
+//      @include selectMonth;
+//    }
+//  }
+//
+//  .selected {
+//    @include selectMonth;
+//  }
+//}
+
 .time-line {
   z-index: 999;
   position: absolute;
@@ -199,43 +246,9 @@ $border-radius: 6px;
   right: $right-panel-width + 10px;
   border-radius: $border-radius;
   @include panelBackground;
-  padding-top: 30px;
-  max-width: 300px;
-  overflow: hidden;
-
-  .time-range {
-    position: relative;
-    transition-timing-function: ease-in;
-    border-top: 1px dotted #707070;
-    width: 600px;
-    display: flex;
-    flex-direction: row;
-    height: 30px;
-    font-size: 12px;
-  }
-
-  .time-item {
-    position: relative;
-    top: -15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    list-style: none;
-    background-color: #ff7461;
-    color: #fea497;
-    flex-basis: 30px;
-    border-radius: 15px;
-    margin: 0 10px;
-    cursor: pointer;
-
-    &:hover {
-      @include selectMonth;
-    }
-  }
-
-  .selected {
-    @include selectMonth;
-  }
+  //padding-top: 30px;
+  width: 360px;
+  padding: 4px 20px;
 }
 
 

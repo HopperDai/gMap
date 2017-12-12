@@ -6,6 +6,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {HttpModule} from '@angular/http';
 import {AppService} from './services/app.service';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import {AppService} from './services/app.service';
     BrowserModule,
     BrowserAnimationsModule,
     NgZorroAntdModule.forRoot(),
-    HttpModule
+    HttpModule,
+    FormsModule
   ],
   providers: [AppService],
   bootstrap: [AppComponent]
