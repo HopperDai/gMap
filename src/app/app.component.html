@@ -4,7 +4,7 @@
 
   <div class="header">
     <nz-radio-group [(ngModel)]="regionValue" (ngModelChange)="showDistrict()">
-      <label nz-radio *ngFor="let region of regions" [nzValue]="region.value">
+      <label nz-radio *ngFor="let region of realRegions" [nzValue]="region.value">
         <span class="radio-label">{{region.name}}</span>
       </label>
     </nz-radio-group>
@@ -51,17 +51,17 @@
         </div>
       </div>
     </div>
-    <!--<div class="right-panel-bottom">-->
-      <!--数据类型：-->
-      <!--<nz-radio-group [(ngModel)]="dataType">-->
-        <!--<label nz-radio [nzValue]="'appeal'">-->
-          <!--<span>诉求</span>-->
-        <!--</label>-->
-        <!--<label nz-radio [nzValue]="'powerCut'">-->
-          <!--<span>停电</span>-->
-        <!--</label>-->
-      <!--</nz-radio-group>-->
-    <!--</div>-->
+    <div class="right-panel-bottom">
+      数据类型：
+      <nz-radio-group [(ngModel)]="dataType" (ngModelChange)="changeDataType()">
+        <label nz-radio [nzValue]="'appeal'">
+          <span>诉求</span>
+        </label>
+        <label nz-radio [nzValue]="'powerCut'">
+          <span>停电</span>
+        </label>
+      </nz-radio-group>
+    </div>
   </div>
 
   <div class="function-panel">

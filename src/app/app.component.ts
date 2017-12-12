@@ -72,7 +72,8 @@ export class AppComponent implements OnInit {
   currentRegionName = '桂林市'; // 当前显示的区域名称
   regionValue = '';
 
-  regions;
+  regions = [];
+  realRegions = [];
 
   appealType = [];
   selectedAppealType;
@@ -178,6 +179,7 @@ export class AppComponent implements OnInit {
     this.initPowerCutData();
 
     this.regions = [...Regions];
+    this.realRegions = [...this.regions];
     this.appealType = [...BizType];
     this.currentMonth = new Date().getMonth() + 1;
 
@@ -212,6 +214,11 @@ export class AppComponent implements OnInit {
     }
 
     const regions = [...Object.keys(this.powerCutRegoinData)];
+    this.powerCutRegoin.push({
+      name: '全部',
+      value: '',
+      regionName: '全部'
+    });
     for (const item of regions) {
       const region = {
         name: item,
@@ -565,6 +572,22 @@ export class AppComponent implements OnInit {
     const currentYear = new Date().getFullYear();
     this.query.endTime = `${currentYear}-${this.currentMonth}-01T01:01:01.755Z`;
     this.getData(this.query);
+  }
+
+  // 改变所查看的数据的类型
+  changeDataType() {
+
+    this.resetQuery();
+
+    if (this.dataType === 'appeal') {
+      this.realRegions = [...this.regions];
+    } else if (this.dataType === 'powerCut') {
+      this.realRegions = [...this.powerCutRegoin];
+    }
+  }
+
+  private resetQuery() {
+    this.regionValue = '';
   }
 }
 
