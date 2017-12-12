@@ -44,11 +44,10 @@
           </label>
         </div>
         <div style="margin-bottom: 10px">
-          <label nz-checkbox [(ngModel)]="isShowMonthPannel">
+          <label nz-checkbox [(ngModel)]="isShowMonthPannel" (ngModelChange)="showOrHideMonthPannel($event)">
             <span>按月份筛选</span>
           </label>
         </div>
-
 
         <div class="issue-select">
           <nz-select style="width: 300px;"
@@ -86,7 +85,7 @@
     <!--</div>-->
 
     <nz-slider [nzMarks]="marks" [nzMin]="1" [nzMax]="12" [nzIncluded]="false"
-               [nzDefaultValue]="currentMonth"></nz-slider>
+               [(ngModel)]="currentMonth" (ngModelChange)="changeMonth()"></nz-slider>
 
   </div>
 </div>

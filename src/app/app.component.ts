@@ -16,6 +16,7 @@ declare global {
 
   interface HTMLBodyElement {
     mozRequestFullScreen(): void;
+
     msRequestFullscreen(): void
   }
 }
@@ -321,6 +322,13 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // 显示或隐藏月份 pannel
+  showOrHideMonthPannel(ev) {
+    if (ev) {
+      this.changeMonth();
+    }
+  }
+
   // 显示或隐藏 panel
   showOrHidePanel() {
     this.panelState = this.panelState === 'hide' ? 'show' : 'hide';
@@ -517,6 +525,12 @@ export class AppComponent implements OnInit {
     this.getData(this.query);
   }
 
+  // 改变查看数据的月份
+  changeMonth() {
+    const currentYear = new Date().getFullYear();
+    this.query.endTime = `${currentYear}-${this.currentMonth}-01T01:01:01.755Z`;
+    this.getData(this.query);
+  }
 }
 
 

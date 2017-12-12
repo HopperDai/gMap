@@ -3,6 +3,6 @@
 export interface Query {
   addr?: string
   bizType1Strings?: any
-  startTime?: string
+  endTime?: string
   zoneID?: string
 }
