@@ -1,6 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
 
-
 html, body {
   height: 100%;
   padding: 0;
@@ -8,4 +7,12 @@ html, body {
   position: fixed;
   left: 0;
   right: 0;
+}
+
+.ant-select-selection--multiple {
+  background: gray !important;
+}
+
+.ant-select-open .ant-select-selection {
+  color: white;
 }

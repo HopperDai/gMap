@@ -2,6 +2,8 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {Utils} from './utils/utils';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Markers} from './model/markers';
+import {AppService} from './services/app.service';
+import {Regions} from './model/regions';
 
 declare var AMap: any;
 declare var ActiveXObject: any;
@@ -51,28 +53,31 @@ export class AppComponent implements OnInit {
 
   currentRegionName = '桂林市'; // 当前显示的区域名称
 
-  administrativeRegion = [{
-    name: '桂林市',
-    center: '110.29002, 25.27361'
-  }, {
-    name: '秀峰区',
-    center: '110.264183,25.273625'
-  }, {
-    name: '叠彩区',
-    center: '110.30188,25.31402'
-  }, {
-    name: '象山区',
-    center: '110.28110,25.26159'
-  }, {
-    name: '七星区',
-    center: '110.322224,25.252701'
-  }, {
-    name: '雁山区',
-    center: '110.28669,25.101935'
-  }, {
-    name: '临桂区',
-    center: '110.212463,25.238628'
-  }];
+  // administrativeRegion = [{
+  //   name: '桂林市',
+  //   center: '110.29002, 25.27361'
+  // }, {
+  //   name: '秀峰区',
+  //   center: '110.264183,25.273625'
+  // }, {
+  //   name: '叠彩区',
+  //   center: '110.30188,25.31402'
+  // }, {
+  //   name: '象山区',
+  //   center: '110.28110,25.26159'
+  // }, {
+  //   name: '七星区',
+  //   center: '110.322224,25.252701'
+  // }, {
+  //   name: '雁山区',
+  //   center: '110.28669,25.101935'
+  // }, {
+  //   name: '临桂区',
+  //   center: '110.212463,25.238628'
+  // }];
+
+  // administrativeRegion;
+  regions;
 
   heatmapData = [];
   district;
@@ -151,11 +156,36 @@ export class AppComponent implements OnInit {
     offset: new AMap.Pixel(-24, -24)
   }];
 
-  constructor() {
+  issueOptions = [{
+    label: '问题1',
+    value: 1
+  }, {
+    label: '问题2',
+    value: 2
+  }, {
+    label: '问题3',
+    value: 3
+  }, {
+    label: '问题4',
+    value: 4
+  }, {
+    label: '问题5',
+    value: 5
+  }, {
+    label: '问题6',
+    value: 6
+  }];
+
+  constructor(private service: AppService) {
   }
 
   ngOnInit() {
-    this.markersData = [...Markers]; // 获取 marker 数据
+    // this.markersData = [...Markers]; // 获取 marker 数据
+    this.regions = [...Regions];
+
+    this.service.getData().subscribe((res) => {
+      console.log(res);
+    });
 
     // 异步加载地图
     Utils.loadAMap().subscribe(success => {
@@ -259,20 +289,25 @@ export class AppComponent implements OnInit {
       });
       // 鼠标点击marker弹出自定义的信息窗体
       marker.on('click', () => {
-        console.log(this.infoWindow);
         this.infoWindow.open(this.map, marker.getPosition());
       });
       this.markers.push(marker);
     }
     this.cluster.addMarkers(this.markers);
+
     console.log('点标注加载成功'); // 加载完数据的处理
   }
 
-  // 显示行政区域
+  // 显示和切换区局
   showDistrict(ev, region) {
-    this.currentRegionName = region.name;
-    if (ev.target.checked) {
-      this.drawDistrict(region.name);
+    if (ev.target.checked && this.currentRegionName !== region.name) {
+      this.currentRegionName = region.name;
+
+      this.service.getData({zoneID: this.currentRegionName}).subscribe((res) => {
+        console.log(res);
+      });
+
+      // this.drawDistrict(region.name);
     }
   }
 
